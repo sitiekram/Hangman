@@ -140,28 +140,8 @@ namespace Hangman
                   };
             //string[] HangmanWords =(File.ReadAllText("../../../wordList.txt")).Split(",");
             secretWord = HangmanWords[ran.Next(0, HangmanWords.Length)];
-            //try
-            //{
-            //    WebClient wc = new WebClient();
-            //    string wordList = wc.DownloadString("https://www.mit.edu/~ecprice/wordlist.10000");
-            //   
-            //} string[] words = wordList.Split('\n');
-            //    word=words[ran.Next(0, words.Length)];
-            //catch (WebException ex)
-            //{
-            //    Console.WriteLine("The website can't be loaded");
-            //}
-            //catch (ArgumentNullException ex)
-            //{
-            //    Console.WriteLine(ex.Message);
-            //}
-            //catch(NotSupportedException ex)
-            //{
-            //    Console.WriteLine(ex.Message);
-            //}
-            
+         
             return secretWord;
-
         }
         private static char[] TransformToDash(string word,char[] answer)
         {
