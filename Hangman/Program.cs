@@ -133,12 +133,12 @@ namespace Hangman
         {
             Random ran = new Random();
             string secretWord = "";
-            /* string[] HangmanWords = {
+             string[] HangmanWords = {
                  "ADVOKAT","AFFÄR","BALKONG","BERÄTTELSE","BARNSKÖTARE","CITRON","DISKMASKIN","FLYGPLATS","FOTBOLLSPELARE",
                  "JÄRNVÄGSSTATION","LÄGENHET","SOMMAR","SPEGEL","ÄPPLE","TREVLIG","MODIG","DATOR","UNDERBAR","KRAFTIG",
                  "ENSAM","DÅLIG","SPÄNNANDE","INTRESSANT"
-                  };*/
-            string[] HangmanWords =(File.ReadAllText("../../../wordList.txt")).Split(",");
+                  };
+            //string[] HangmanWords =(File.ReadAllText("../../../wordList.txt")).Split(",");
             secretWord = HangmanWords[ran.Next(0, HangmanWords.Length)];
             //try
             //{
