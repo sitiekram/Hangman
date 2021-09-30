@@ -83,6 +83,7 @@ namespace Hangman
                 {
                     answer[i] = (input.ToUpper())[i];
                 }
+                IsWordAnswered();
             }
 
             else
@@ -90,7 +91,7 @@ namespace Hangman
                 Console.WriteLine("You didn't get the correct word");
             }
             GuessCount++;
-            IsWordAnswered();
+            
         }
         private static bool CheckLetterRepeated(string secretWord, char guessLetter)
         {
