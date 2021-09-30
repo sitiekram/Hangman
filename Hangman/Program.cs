@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.IO;
@@ -8,27 +8,29 @@ namespace Hangman
 {
     class Program
     {
+        static List<char> correctLetter = new List<char>();
+        static bool end = false;
+        static StringBuilder incorrectLetter = new StringBuilder();
+        static string secretWord = "";
+        static char[] answer;
+        static int GuessCount = 0;
+
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome to the Hangman game");
             Console.WriteLine("---------------------------");
-            string secretWord = RandomWordGenerator();
-           // Console.WriteLine(secretWord);
+            secretWord = RandomWordGenerator();
+            //Console.WriteLine(secretWord);
+            answer = new char[secretWord.Length];
             GuessWord(secretWord);
             Console.ReadLine();
         }
-
         private static void GuessWord(string secretWord)
         {
-            bool end = false;
-            int GuessCount = 0;
-            char[] answer = new char[secretWord.Length];
-            List<char> correctLetter = new List<char>();
-            StringBuilder incorrectLetter = new StringBuilder();
             TransformToDash(secretWord, answer);
             while (GuessCount < 10 && !end)
             {
-                char guessLetter=' ';
+                char guessLetter =' ';
                 string input = "";
                 bool result = false;
                 Console.WriteLine();
@@ -48,120 +50,134 @@ namespace Hangman
                 {
                     Console.WriteLine(ex.Message);
                 }
-               guessLetter=Char.ToUpper(guessLetter);
-                
+                guessLetter = Char.ToUpper(guessLetter);
                 if (result)
                 {
-                    if ((guessLetter >= 'A' && guessLetter <= 'Z') || guessLetter=='Ä' || guessLetter == 'Å' || guessLetter == 'Ö')
-                    {
-                        if (!correctLetter.Contains(guessLetter) && !incorrectLetter.ToString().Contains(guessLetter))
-                        {
-                            if (secretWord.Contains(guessLetter))
-                            {
-                                for (int i = 0; i < secretWord.Length; i++)
-                                {
-                                    if (secretWord[i] == guessLetter)
-                                    {
-                                        answer[i] = guessLetter;
-                                    }
-                                }
-                                correctLetter.Add(guessLetter);
-                                for (int i = 0; i < answer.Length; i++)
-                                {
-                                    if (answer[i] == '_')
-                                    {
-                                        end = false;
-                                        break;
-                                    }
-                                    end = true;
-                                }
-
-                            }
-                            else
-                           {
-                                try
-                                {
-                                    incorrectLetter.Append(" "+guessLetter);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine(ex.Message);
-                                }
-                            }
-                            GuessCount++;
-
-                        }
-                        else
-                        {
-                            Console.WriteLine("You have entered the letter before.Please guess new letter");
-                            // System.Threading.Thread.Sleep(2000);
-                        }
-                    }
-                    else 
-                    {
-                        Console.WriteLine("Please enter a vaild letter.");
-                        //System.Threading.Thread.Sleep(2000);
-                    }
+                    GuessWordByLetter(secretWord, guessLetter);
                 }
                 else
                 {
-                    if (input.ToUpper() == secretWord)
-                    {
-                        for (int i = 0; i < input.Length; i++)
-                        {
-                            answer[i] = input.ToUpper()[i];
-                        }
-                        end = true;
-                    }
-
-                    else
-                    {
-                        Console.WriteLine("You didn't get the correct word");
-                       // System.Threading.Thread.Sleep(2000);
-                    }
-
-                    GuessCount++;
-
+                    GuessWordByWord(secretWord, input);
                 }
-               Console.WriteLine();
-                //Console.Clear();
-                WinnerCheker(end,incorrectLetter,GuessCount,secretWord,answer);
+                Console.WriteLine();
+                WinnerCheker(GuessCount, secretWord);
             }
         }
+        private static void GuessWordByLetter(string secretWord, char guessLetter)
+        {
+            if (CheckLetterRepeated(secretWord, guessLetter))
+            {
+                Console.WriteLine("You have entered the letter before.Please guess new letter");
+            }
+            else
+            {
+                SolveWord(secretWord, guessLetter);
+                GuessCount++;
+            }
+        }
+        private static void GuessWordByWord(string secretWord, string input)
+        {
+            if (input.ToUpper() == secretWord)
+            {
+                for (int i = 0; i < input.Length; i++)
+                {
+                    answer[i] = (input.ToUpper())[i];
+                }
+            }
 
+            else
+            {
+                Console.WriteLine("You didn't get the correct word");
+            }
+            GuessCount++;
+            IsWordAnswered();
+        }
+        private static bool CheckLetterRepeated(string secretWord, char guessLetter)
+        {
+            bool repeatedLetter = false;
+            if (correctLetter.Contains(guessLetter) || incorrectLetter.ToString().Contains(guessLetter))
+            {
+                repeatedLetter = true;
+            }
+            return repeatedLetter;
+        }
+        private static bool LetterExistInWordChecker(string secretWord, char guessLetter)
+        {
+            bool exist = false;
+            if (secretWord.Contains(guessLetter))
+            {
+                exist = true;
+            }
+            return exist;
+        }
+        private static void SolveWord(string secretWord, char guessLetter)
+        {
+            if (LetterExistInWordChecker(secretWord, guessLetter))
+            {
+                for (int i = 0; i < secretWord.Length; i++)
+                {
+                    if (secretWord[i] == guessLetter)
+                        answer[i] = guessLetter;
+                }
+                correctLetter.Add(guessLetter);
+                IsWordAnswered();
+            }
+            else
+            {
+                try
+                {
+                    incorrectLetter.Append(" " + guessLetter);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+        }
+        private static void IsWordAnswered()
+        {
+            for (int i = 0; i < answer.Length; i++)
+            {
+                if (answer[i] == '_')
+                {
+                    end = false;
+                    break;
+                }
+                end = true;
+            }
+        }
         private static string RandomWordGenerator()
         {
             Random ran = new Random();
             string secretWord = "";
-             string[] HangmanWords = {
+            string[] HangmanWords = {
                  "ADVOKAT","AFFÄR","BALKONG","BERÄTTELSE","BARNSKÖTARE","CITRON","DISKMASKIN","FLYGPLATS","FOTBOLLSPELARE",
-                 "JÄRNVÄGSSTATION","LÄGENHET","SOMMAR","SPEGEL","ÄPPLE","TREVLIG","MODIG","DATOR","UNDERBAR","KRAFTIG",
+                 "ÄPPLE","LÄGENHET","SOMMAR","SPEGEL","ÄPPLE","TREVLIG","MODIG","DATOR","UNDERBAR","KRAFTIG",
                  "ENSAM","DÅLIG","SPÄNNANDE","INTRESSANT"
                   };
             //string[] HangmanWords =(File.ReadAllText("../../../wordList.txt")).Split(",");
             secretWord = HangmanWords[ran.Next(0, HangmanWords.Length)];
-         
             return secretWord;
+
         }
-        private static char[] TransformToDash(string word,char[] answer)
+        private static void TransformToDash(string word, char[] answer)
         {
             for (int i = 0; i < word.Length; i++)
             {
                 answer[i] = '_';
-                Console.Write(answer[i]+" ");
+                Console.Write(answer[i] + " ");
             }
-            return answer;
         }
-        private static void display(char[]answer)
+        private static void display(char[] answer)
         {
             foreach (char item in answer)
             {
-                Console.Write(item+" ");
+                Console.Write(item + " ");
             }
         }
-        private static void WinnerCheker(bool end,StringBuilder incorrectLetter,int GuessCount,string secretWord,char[] answer)
+        private static void WinnerCheker(int GuessCount, string secretWord)
         {
-            if(end)
+            if (end)
             {
                 Console.WriteLine();
                 Console.WriteLine("You win");
@@ -179,15 +195,16 @@ namespace Hangman
                 }
                 else
                 {
-                    Console.WriteLine((10-GuessCount) +" attempt is left.");
+                    Console.WriteLine((10 - GuessCount) + " attempt is left.");
                     Console.WriteLine("Attempted incorrect letter: " + incorrectLetter);
                     display(answer);
                 }
 
             }
         }
- 
+
     }
 }
-    
+
+
 
