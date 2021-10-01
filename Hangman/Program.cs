@@ -21,6 +21,7 @@ namespace Hangman
             Console.WriteLine("---------------------------");
             secretWord = RandomWordGenerator();
             answer = new char[secretWord.Length];
+            Console.WriteLine("Guess the word");
             GuessWord(secretWord);
             Console.ReadLine();
         }
