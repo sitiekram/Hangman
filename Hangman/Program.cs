@@ -20,7 +20,6 @@ namespace Hangman
             Console.WriteLine("Welcome to the Hangman game");
             Console.WriteLine("---------------------------");
             secretWord = RandomWordGenerator();
-            //Console.WriteLine(secretWord);
             answer = new char[secretWord.Length];
             GuessWord(secretWord);
             Console.ReadLine();
